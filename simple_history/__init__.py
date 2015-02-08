@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 __version__ = '1.8.1'
 
+from . import utils
+
 
 def register(
         model, app=None, manager_name='history', records_class=None,
@@ -22,13 +24,14 @@ def register(
     """
     from . import models
 
-    if records_class is None:
-        records_class = models.HistoricalRecords
+    natural_key = utils.natural_key_from_model(model)
+    if natural_key not in models.registered_models:
+        if records_class is None:
+            records_class = models.HistoricalRecords
+        records = records_class(**records_config)
+        records.manager_name = manager_name
+        records.module = app and ("%s.models" % app) or model.__module__
+        records.add_extra_methods(model)
+        history_name = utils.natural_key_from_model(records.finalize(model))[1]
+        models.registered_models[natural_key] = history_name
 
-    records = records_class(**records_config)
-    records.manager_name = manager_name
-    records.table_name = table_name
-    records.module = app and ("%s.models" % app) or model.__module__
-    records.add_extra_methods(model)
-    records.finalize(model)
-    models.registered_models[model._meta.db_table] = model
