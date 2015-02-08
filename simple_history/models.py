@@ -27,6 +27,7 @@ else:  # south configuration for CustomForeignKeyField
         [], ["^simple_history.models.CustomForeignKeyField"])
 
 from . import exceptions
+from . import utils
 from .manager import HistoryDescriptor
 
 registered_models = {}
@@ -99,6 +100,7 @@ class HistoricalRecords(object):
         descriptor = HistoryDescriptor(history_model)
         setattr(sender, self.manager_name, descriptor)
         sender._meta.simple_history_manager_attribute = self.manager_name
+        return history_model
 
     def create_history_model(self, model):
         """
@@ -128,7 +130,7 @@ class HistoricalRecords(object):
         if self.table_name is not None:
             attrs['Meta'].db_table = self.table_name
         name = 'Historical%s' % model._meta.object_name
-        registered_models[model._meta.db_table] = model
+        registered_models[utils.natural_key_from_model(model)] = name
         return python_2_unicode_compatible(
             type(str(name), self.bases, attrs))
 
