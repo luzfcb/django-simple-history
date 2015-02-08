@@ -14,7 +14,7 @@ from simple_history import exceptions, register
 from simple_history.models import HistoricalRecords, convert_auto_field
 from ..models import (
     AdminProfile, Bookcase, MultiOneToOne, Poll, Choice, Voter, Restaurant,
-    Person, FileModel, Document, Book, HistoricalPoll, Library, State,
+    Person, FileModel, Document, Record, Book, HistoricalPoll, Library, State,
     AbstractBase, ConcreteAttr, ConcreteUtil, SelfFK, Temperature, WaterLevel,
     ExternalModel1, ExternalModel3, UnicodeVerboseName, HistoricalChoice,
     HistoricalState, HistoricalCustomFKError, Series, SeriesWork, PollInfo,
@@ -317,6 +317,12 @@ class HistoricalRecordsTest(TestCase):
         poll.save()
         poll_info = PollInfo(poll=poll)
         poll_info.save()
+
+    def test_proxy_generates_history(self):
+        assert Record.history.count() == 0
+        Record.objects.create()
+        assert Record.history.count() == 1
+
 
 
 class RegisterTest(TestCase):
