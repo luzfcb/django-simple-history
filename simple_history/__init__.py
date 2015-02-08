@@ -35,3 +35,7 @@ def register(
         history_name = utils.natural_key_from_model(records.finalize(model))[1]
         models.registered_models[natural_key] = history_name
 
+
+        records.concrete_natural_key = utils.natural_key_from_model(model._meta.concrete_model or model)
+        records.finalize(model)
+

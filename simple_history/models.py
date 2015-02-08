@@ -6,6 +6,9 @@ import threading
 
 from django.db import models, router
 from django.db.models.fields.proxy import OrderWrt
+from django.db.models.fields.related import RelatedField
+from django.db.models.related import RelatedObject
+from django.db.models.loading import get_model
 from django.conf import settings
 from django.contrib import admin
 from django.utils import six
@@ -54,6 +57,8 @@ class HistoricalRecords(object):
         self.module = cls.__module__
         self.cls = cls
         models.signals.class_prepared.connect(self.finalize, weak=False)
+        self.concrete_natural_key = utils.natural_key_from_model(cls._meta.concrete_model or cls)
+        models.signals.class_prepared.connect(self.finalize)
         self.add_extra_methods(cls)
 
     def add_extra_methods(self, cls):
@@ -87,6 +92,18 @@ class HistoricalRecords(object):
                 sender._meta.object_name,
             ))
         history_model = self.create_history_model(sender)
+
+        if self.concrete_natural_key != utils.natural_key_from_model(sender._meta.concrete_model):
+            return
+        history_model_name = registered_models.get(self.concrete_natural_key)
+        if not history_model_name:
+            history_model = self.create_history_model(sender)
+        else:
+            try:
+                history_model = getattr(sender._meta.concrete_model, self.manager_name).model
+            except AttributeError:  # possible during migrations
+                return
+
         module = importlib.import_module(self.module)
         setattr(module, history_model.__name__, history_model)
 
