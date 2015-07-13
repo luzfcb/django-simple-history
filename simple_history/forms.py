@@ -15,6 +15,8 @@ class ReadOnlyFieldsMixin(object):
 
     def __init__(self, *args, **kwargs):
         super(ReadOnlyFieldsMixin, self).__init__(*args, **kwargs)
+        if len(self.readonly_fields) == 0:
+            self.all_fields = True
 
         for field in (field for field_name, field in six.iteritems(self.fields)
                       if field_name in self.readonly_fields
