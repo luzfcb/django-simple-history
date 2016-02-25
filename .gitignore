@@ -9,6 +9,9 @@ MANIFEST
 .tox/
 htmlcov/
 test_files/
+.eggs
 /.ve
 /.project
 /.pydevproject
+# Pycharm project
+.idea/
