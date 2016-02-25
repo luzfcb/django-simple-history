@@ -11,6 +11,8 @@ Authors
 - Daniel Roschka
 - David Hite
 - Eduardo Cuducos
+- Edgar Gabaldi @edgabaldi
+- Fabio C. Barrionuevo da Luz @luzfcb
 - George Vilches
 - Grzegorz Bialy
 - Hamish Downer

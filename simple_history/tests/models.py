@@ -41,6 +41,11 @@ class PollWithExcludeFields(models.Model):
     history = HistoricalRecords(excluded_fields=['pub_date'])
 
 
+class Dummy(models.Model):
+    foo = models.CharField(max_length=100)
+    bar = models.CharField(max_length=100)
+
+
 class Temperature(models.Model):
     location = models.CharField(max_length=200)
     temperature = models.IntegerField()
