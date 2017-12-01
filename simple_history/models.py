@@ -214,10 +214,14 @@ class HistoricalRecords(object):
                     [getattr(self, opts.pk.attname), self.history_id])
 
         def get_instance(self):
-            return model(**{
+            model_instance = model(**{
                 field.attname: getattr(self, field.attname)
                 for field in fields.values()
             })
+            # used to provide a way to differentiate an object generated
+            # by get_instance from an original model instance
+            model_instance._generated_by_simple_history = True
+            return model_instance
 
         return {
             'history_id': models.AutoField(primary_key=True),
